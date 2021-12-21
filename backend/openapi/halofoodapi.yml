@@ -1,0 +1,46 @@
+openapi: '3.0.2'
+info:
+  title: Halo Food
+  version: '1.0'
+servers:
+  - url: https://localhost:9000
+security:
+  - type: ""
+
+paths:
+  /register/customer:
+    post:
+      tags:
+      - "Users"
+      summary: "Register customer baru"
+      description: ""
+      operationId: "addPet"
+      consumes :
+      - "application/json"
+      - "multipart/form-data"
+      parameters:
+      - in: "email"
+        name: "Email"
+        #description: "Email pengguna"
+        required: true
+      - in: "alias"
+        name: "Alias"
+        required: true
+      - in : "nama"
+        name : "Nama"
+        required: true
+      - in : "user_password"
+        name : "Password"
+        required: true
+        description: "Minimal password 8 digit"
+
+      responses:
+        '200':
+          description: OK
+        "NotFound": 
+          description: Entity not found.
+        "IllegalInput": 
+          description: "Illegal input for operation."
+      
+       
+  
