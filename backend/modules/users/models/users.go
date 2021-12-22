@@ -23,7 +23,7 @@ type Users struct {
 	CreatedAt       time.Time         `json:"created_at,omitempty"`
 	CreatedBy       uuid.UUID         `json:"created_by" gorm:"type:uuid;default:NULL"`
 	IDLevel         int               `json:"id_level"`
-	Level           level.MasterLevel `gorm:"foreignKey:IDLevel"`
+	Level           level.MasterLevel `json:"level" form:"level" gorm:"foreignKey:IDLevel"`
 	ConfirmKey      string            `json:"confirm_key"`
 	ConfirmAt       time.Time         `json:"confirm_at,omitempty" gorm:"default:CURRENT_TIMESTAMP"`
 	ConfirmKeyValid bool              `json:"confirm_key_valid"`

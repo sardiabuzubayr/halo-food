@@ -1,13 +1,18 @@
 package controllers
 
 import (
+	"fmt"
 	"halo_food/config"
 	general "halo_food/helpers/general"
+	"halo_food/helpers/security"
 	"halo_food/model"
 	usermodel "halo_food/modules/users/models"
 	"net/http"
+	"strconv"
+	"time"
 
 	"github.com/go-playground/validator/v10"
+	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 )
 
@@ -35,7 +40,7 @@ func DoLogin(c echo.Context) error {
 			})
 			response := model.Response{
 				ErrorCode: 101,
-				Message:   "Gagal login, check field yang wajib terisi",
+				Message:   "Gagal login, mohon cek kembali username dan password anda",
 				Errors:    errField,
 			}
 			return c.JSON(http.StatusOK, response)
@@ -43,7 +48,40 @@ func DoLogin(c echo.Context) error {
 	}
 	if usermodel.DoLoginUser(config.DB, userValidator.Username, userValidator.Password) {
 		user, _ := usermodel.GetOneByUsername(config.DB, userValidator.Username)
-		return c.JSON(http.StatusOK, user)
+
+		lifeTime, _ := strconv.Atoi(config.GetEnv("TOKEN_LIFETIME"))
+		lifeTimeRefresh, _ := strconv.Atoi(config.GetEnv("TOKEN_REFRESH_LIFETIME"))
+		dataToken := &security.JwtToken{
+			Email:     user.Email,
+			Alias:     user.Alias,
+			Nama:      user.Nama,
+			IdLevel:   int(user.Level.IdLevel),
+			NamaLevel: user.Level.NamaLevel,
+			StandardClaims: jwt.StandardClaims{
+				IssuedAt:  time.Now().Unix(),
+				ExpiresAt: time.Now().Add(time.Hour * time.Duration(lifeTime)).Unix(),
+			},
+		}
+
+		dataRefreshToken := &security.JwtRefreshToken{
+			Email: user.Email,
+			Alias: user.Alias,
+			StandardClaims: jwt.StandardClaims{
+				IssuedAt:  time.Now().Unix(),
+				ExpiresAt: time.Now().Add(time.Hour * time.Duration(lifeTimeRefresh)).Unix(),
+			},
+		}
+		fmt.Println(time.Now().Unix())
+		token, _ := security.EncodeToken(dataToken)
+		refreshToken, _ := security.EncodeToken(dataRefreshToken)
+
+		response := model.Response{
+			ErrorCode:    101,
+			Message:      "Sukses login",
+			Token:        token,
+			RefreshToken: refreshToken,
+		}
+		return c.JSON(http.StatusOK, response)
 	}
 	return c.JSON(http.StatusOK, false)
 }
