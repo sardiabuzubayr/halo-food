@@ -3,8 +3,8 @@ package config
 import "testing"
 
 func TestKoneksi(t *testing.T) {
-	ConnectDB()
-	if DB == nil {
+	db := ConnectDB()
+	if db == nil {
 		t.Errorf("Gagal Koneksi")
 	}
 }

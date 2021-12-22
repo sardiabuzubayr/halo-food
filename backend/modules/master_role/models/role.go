@@ -1,6 +1,6 @@
 package models
 
-import "halo_food/model"
+import model "halo_food/models"
 
 type MasterRole struct {
 	IdRole   uint   `json:"id_role"`

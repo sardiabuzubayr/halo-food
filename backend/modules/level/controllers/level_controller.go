@@ -1,15 +1,16 @@
 package controllers
 
 import (
-	model "halo_food/model"
+	model "halo_food/models"
 	levelModel "halo_food/modules/level/models"
 	"net/http"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
 )
 
-func GetLevelByID(c echo.Context) error {
+func GetLevelByID(db *gorm.DB, c echo.Context) error {
 	idParam := c.Param("id_level")
 	idLevel, err := strconv.Atoi(idParam)
 	if err != nil {
@@ -19,17 +20,16 @@ func GetLevelByID(c echo.Context) error {
 		}
 		return c.JSON(http.StatusOK, response)
 	}
-	// levelModel.InitConnection(config.DB)
-	data := levelModel.GetLevelByID(idLevel)
+	// levelModel.InitConnection(db)
+	data := levelModel.GetLevelByID(db, idLevel)
 	return c.JSON(http.StatusOK, data)
 }
 
-func GetAll(c echo.Context) error {
+func GetAll(db *gorm.DB, c echo.Context) error {
 	limit, _ := strconv.Atoi(c.Param("limit"))
 	page, _ := strconv.Atoi(c.Param("page"))
 	keywords := c.QueryParam("keywords")
-	// levelModel.InitConnection(config.DB)
-	data := levelModel.GetAll(limit, page, keywords)
+	data := levelModel.GetAll(db, limit, page, keywords)
 
 	return c.JSON(http.StatusOK, data)
 }

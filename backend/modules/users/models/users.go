@@ -1,7 +1,7 @@
 package models
 
 import (
-	"halo_food/model"
+	model "halo_food/models"
 	level "halo_food/modules/level/models"
 	"time"
 

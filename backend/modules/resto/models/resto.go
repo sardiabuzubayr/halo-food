@@ -1,7 +1,7 @@
 package models
 
 import (
-	"halo_food/model"
+	model "halo_food/models"
 	"halo_food/modules/users/models"
 
 	"github.com/google/uuid"

@@ -1,17 +1,9 @@
 package models
 
 import (
-	"halo_food/model"
+	model "halo_food/models"
 	rolemodel "halo_food/modules/master_role/models"
-
-	"gorm.io/gorm"
 )
-
-var DB *gorm.DB
-
-func InitConnection(activeConnection *gorm.DB) {
-	DB = activeConnection
-}
 
 type LevelRole struct {
 	IdLevelRole uint                 `json:"id_level_role"`

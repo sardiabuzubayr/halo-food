@@ -24,6 +24,7 @@ type (
 )
 
 func EncodeToken(data jwt.Claims) (string, error) {
+	// claims := &data
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, data)
 	tokenResult, err := token.SignedString([]byte(config.GetEnv("TOKEN_SECRET")))
 	return tokenResult, err

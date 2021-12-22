@@ -1,16 +1,10 @@
 package models
 
 import (
-	"halo_food/model"
+	model "halo_food/models"
 
 	"gorm.io/gorm"
 )
-
-var db *gorm.DB
-
-func (msl *MasterLevel) InitConnection(activeConnection *gorm.DB) {
-	db = activeConnection
-}
 
 type MasterLevel struct {
 	IdLevel   uint   `json:"id_level" gorm:"primaryKey"`
@@ -21,7 +15,8 @@ type MasterLevel struct {
 func (MasterLevel) TableName() string {
 	return model.TBLevel
 }
-func GetLevelByID(IdLevel int) model.Response {
+
+func GetLevelByID(db *gorm.DB, IdLevel int) model.Response {
 	var level MasterLevel
 	result := db.Where("id_level = ?", IdLevel).First(&level)
 
@@ -38,7 +33,7 @@ func GetLevelByID(IdLevel int) model.Response {
 	return data
 }
 
-func GetAll(limit int, page int, keywords string) model.Response {
+func GetAll(db *gorm.DB, limit int, page int, keywords string) model.Response {
 	var levels []MasterLevel
 	offset := (limit * page) - limit
 	if offset < 0 {

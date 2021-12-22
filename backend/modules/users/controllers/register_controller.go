@@ -3,9 +3,8 @@ package controllers
 import (
 	"encoding/json"
 	"fmt"
-	"halo_food/config"
 	general "halo_food/helpers/general"
-	"halo_food/model"
+	model "halo_food/models"
 	drivermodel "halo_food/modules/driver/models"
 	restomodel "halo_food/modules/resto/models"
 	usermodel "halo_food/modules/users/models"
@@ -19,6 +18,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 type (
@@ -51,7 +51,7 @@ type (
 	}
 )
 
-func Register(c echo.Context) error {
+func Register(db *gorm.DB, c echo.Context) error {
 	validate := validator.New()
 	user := new(usermodel.Users)
 	general.BindData(c, user)
@@ -84,7 +84,7 @@ func Register(c echo.Context) error {
 	user.UserPassword = string(newPass)
 	user.IDLevel = 3
 
-	err = user.RegisterNewCustomer(config.DB)
+	err = user.RegisterNewCustomer(db)
 	if err != nil {
 		response = model.Response{
 			ErrorCode: 101,
@@ -103,7 +103,7 @@ func Register(c echo.Context) error {
 
 }
 
-func RegisterDriver(c echo.Context) error {
+func RegisterDriver(db *gorm.DB, c echo.Context) error {
 	validate := validator.New()
 	user := new(usermodel.Users)
 	general.BindData(c, user)
@@ -134,7 +134,7 @@ func RegisterDriver(c echo.Context) error {
 	}
 	user.ConfirmKey = general.RandomString(20)
 	user.IDLevel = 5
-	tx := config.DB.Begin()
+	tx := db.Begin()
 	err = user.RegisterNewCustomer(tx)
 	if err != nil {
 		response = model.Response{
@@ -212,7 +212,7 @@ func RegisterDriver(c echo.Context) error {
 	return c.JSON(http.StatusOK, response)
 }
 
-func RegisterResto(c echo.Context) error {
+func RegisterResto(db *gorm.DB, c echo.Context) error {
 	validate := validator.New()
 	user := new(usermodel.Users)
 	general.BindData(c, user)
@@ -244,7 +244,7 @@ func RegisterResto(c echo.Context) error {
 	}
 	user.ConfirmKey = general.RandomString(20)
 	user.IDLevel = 5
-	tx := config.DB.Begin()
+	tx := db.Begin()
 	err = user.RegisterNewCustomer(tx)
 	if err != nil {
 		response = model.Response{

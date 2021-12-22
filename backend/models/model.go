@@ -1,4 +1,4 @@
-package model
+package models
 
 import (
 	"context"
@@ -42,4 +42,8 @@ type Response struct {
 type ErrorValidator struct {
 	FieldName    string `json:"field_name"`
 	ErrorMessage string `json:"error_message"`
+}
+
+type DbConn struct {
+	db *gorm.DB
 }

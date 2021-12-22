@@ -1,7 +1,7 @@
 package driver
 
 import (
-	"halo_food/model"
+	model "halo_food/models"
 	usermodel "halo_food/modules/users/models"
 
 	"github.com/google/uuid"

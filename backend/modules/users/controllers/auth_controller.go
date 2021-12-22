@@ -1,11 +1,10 @@
 package controllers
 
 import (
-	"fmt"
 	"halo_food/config"
 	general "halo_food/helpers/general"
 	"halo_food/helpers/security"
-	"halo_food/model"
+	model "halo_food/models"
 	usermodel "halo_food/modules/users/models"
 	"net/http"
 	"strconv"
@@ -14,6 +13,7 @@ import (
 	"github.com/go-playground/validator/v10"
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
 )
 
 type (
@@ -23,7 +23,7 @@ type (
 	}
 )
 
-func DoLogin(c echo.Context) error {
+func DoLogin(db *gorm.DB, c echo.Context) error {
 	validate := validator.New()
 	userValidator := new(UserValidator)
 	if err := c.Bind(userValidator); err != nil {
@@ -46,8 +46,8 @@ func DoLogin(c echo.Context) error {
 			return c.JSON(http.StatusOK, response)
 		}
 	}
-	if usermodel.DoLoginUser(config.DB, userValidator.Username, userValidator.Password) {
-		user, _ := usermodel.GetOneByUsername(config.DB, userValidator.Username)
+	if usermodel.DoLoginUser(db, userValidator.Username, userValidator.Password) {
+		user, _ := usermodel.GetOneByUsername(db, userValidator.Username)
 
 		lifeTime, _ := strconv.Atoi(config.GetEnv("TOKEN_LIFETIME"))
 		lifeTimeRefresh, _ := strconv.Atoi(config.GetEnv("TOKEN_REFRESH_LIFETIME"))
@@ -71,7 +71,6 @@ func DoLogin(c echo.Context) error {
 				ExpiresAt: time.Now().Add(time.Hour * time.Duration(lifeTimeRefresh)).Unix(),
 			},
 		}
-		fmt.Println(time.Now().Unix())
 		token, _ := security.EncodeToken(dataToken)
 		refreshToken, _ := security.EncodeToken(dataRefreshToken)
 
@@ -90,7 +89,7 @@ func DoLogin(c echo.Context) error {
 // 	limit, _ := strconv.Atoi(c.Param("limit"))
 // 	page, _ := strconv.Atoi(c.Param("page"))
 // 	keywords := c.QueryParam("keywords")
-// 	data := filmModel.GetAll(config.DB, limit, page, keywords)
+// 	data := filmModel.GetAll(db, limit, page, keywords)
 
 // 	return c.JSON(http.StatusOK, data)
 // }
